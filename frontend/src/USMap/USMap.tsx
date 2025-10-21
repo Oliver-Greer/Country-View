@@ -1,44 +1,82 @@
 import state_data from "../../public/state_data.json";
-import StateData from "./StateData.tsx";
+import StateData from "../StateData/StateData.tsx";
 import "./USMap.css";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect, useReducer } from "react";
+
+type MapState = {
+  viewBox: string;
+  targetViewBox: string;
+  selectedName: string;
+};
+
+type MapSetViewboxAction = {
+  type: "SET_VIEWBOX";
+  payload: string;
+};
+
+type MapSetTargetViewboxAction = {
+  type: "SET_TARGET_VIEWBOX";
+  payload: string;
+};
+
+type MapSetSelectedNameAction = {
+  type: "SET_SELECTED_NAME";
+  payload: string;
+};
+
+type MapAction =
+  | MapSetViewboxAction
+  | MapSetTargetViewboxAction
+  | MapSetSelectedNameAction;
+
+const initialViewBox = "0 0 2000 1700";
+
+const initialMapState: MapState = {
+  viewBox: localStorage.getItem("viewBox") || initialViewBox,
+  targetViewBox: localStorage.getItem("targetViewBox") || initialViewBox,
+  selectedName: localStorage.getItem("selectedName") || "",
+};
 
 export interface USMapProps {
   setStateClicked: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const mapReducer = (state: MapState, action: MapAction) => {
+  switch (action.type) {
+    case "SET_VIEWBOX":
+      return { ...state, viewBox: action.payload };
+    case "SET_TARGET_VIEWBOX":
+      return { ...state, targetViewBox: action.payload };
+    case "SET_SELECTED_NAME":
+      return { ...state, selectedName: action.payload };
+    default:
+      throw new Error();
+  }
+};
+
 const USMap: React.FC<USMapProps> = ({ setStateClicked }) => {
   const animationRef = useRef<number | null>(null);
 
-  const initialViewBox = "0 0 2000 1700";
-  //refactor to useReducer for a single complex state, also break out seperate generic storage state management
-  const [viewBox, setViewBox] = useState(
-    localStorage.getItem("viewBox") || initialViewBox,
-  );
-  const [targetViewBox, setTargetViewbox] = useState(
-    localStorage.getItem("targetViewBox") || initialViewBox,
-  );
-  const [selectedName, setSelectedName] = useState(
-    localStorage.getItem("selectedName") || "",
-  );
+  const [mapState, dispatchMapState] = useReducer(mapReducer, initialMapState);
+
   useEffect(() => {
-    localStorage.setItem("viewBox", viewBox);
-  }, [viewBox]);
+    localStorage.setItem("viewBox", mapState.viewBox);
+  }, [mapState.viewBox]);
   useEffect(() => {
-    localStorage.setItem("targetViewBox", targetViewBox);
-  }, [targetViewBox]);
+    localStorage.setItem("targetViewBox", mapState.targetViewBox);
+  }, [mapState.targetViewBox]);
   useEffect(() => {
-    localStorage.setItem("selectedName", selectedName);
-  }, [selectedName]);
+    localStorage.setItem("selectedName", mapState.selectedName);
+  }, [mapState.selectedName]);
 
   const animateViewBox = (target: string, duration = 1000) => {
-    setTargetViewbox(target);
+    dispatchMapState({ type: "SET_TARGET_VIEWBOX", payload: target });
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
 
     const startTime = performance.now();
-    const startViewBox = viewBox.split(" ").map(Number);
+    const startViewBox = mapState.viewBox.split(" ").map(Number);
     const endViewBox = target.split(" ").map(Number);
 
     const stepThroughAnimation = (currentTime: number) => {
@@ -52,7 +90,7 @@ const USMap: React.FC<USMapProps> = ({ setStateClicked }) => {
         },
       );
 
-      setViewBox(newViewBox.join(" "));
+      dispatchMapState({ type: "SET_VIEWBOX", payload: newViewBox.join(" ") });
 
       if (t < 1) {
         animationRef.current = requestAnimationFrame(stepThroughAnimation);
@@ -66,13 +104,13 @@ const USMap: React.FC<USMapProps> = ({ setStateClicked }) => {
 
   const handleClick = (bounds: Record<string, number>, name: string) => {
     let newViewBox = `${bounds["x_min"] - (bounds["x_max"] - bounds["x_min"]) / 2} ${bounds["y_min"] - (bounds["y_max"] - bounds["y_min"]) / 2} ${(bounds["x_max"] - bounds["x_min"]) * 2} ${(bounds["y_max"] - bounds["y_min"]) * 2}`;
-    if (newViewBox == targetViewBox) {
+    if (newViewBox == mapState.targetViewBox) {
       newViewBox = initialViewBox;
       setStateClicked(false);
-      setSelectedName("");
+      dispatchMapState({ type: "SET_SELECTED_NAME", payload: "" });
     } else {
       setStateClicked(true);
-      setSelectedName(name);
+      dispatchMapState({ type: "SET_SELECTED_NAME", payload: name });
     }
     animateViewBox(newViewBox);
   };
@@ -91,10 +129,10 @@ const USMap: React.FC<USMapProps> = ({ setStateClicked }) => {
     <>
       <div className="w-screen h-screen">
         <p className="absolute z-3 top-10 inset-x-0 text-2xl md:text-4xl lg:text-6xl text-center text-zinc-300 font-sans font-bold">
-          {selectedName}
+          {mapState.selectedName}
         </p>
         <div className="z-1 flex items-center w-full">
-          <svg className="w-screen h-screen flex " viewBox={viewBox}>
+          <svg className="w-screen h-screen flex " viewBox={mapState.viewBox}>
             {state_data.map((state) => {
               const colors = getStateColorLogic();
 
