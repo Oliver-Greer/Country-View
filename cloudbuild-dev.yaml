@@ -21,35 +21,35 @@ steps:
 # ----------------
 - name: 'node'
   id: 'Install npm Dependencies'
-  dir: '/frontend'
+  dir: 'frontend'
   entrypoint: 'npm'
   args: ['install']
   waitFor: ['-']
 
 - name: 'node'
   id: 'Unit Test Frontend'
-  dir: '/frontend'
+  dir: 'frontend'
   entrypoint: 'npm'
   args: ['test']
   waitFor: ['Install npm Dependencies']
 
 - name: 'node'
   id: 'Build Frontend'
-  dir: '/frontend'
+  dir: 'frontend'
   entrypoint: 'npm'
   args: ['build']
   waitFor: ['Unit Test Frontend']
 
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Pull Cache'
-  dir: '/backend'
+  dir: 'backend'
   entrypoint: 'bash'
   args: ['-c', 'docker pull gcr.io/$PROJECT_ID/country-view-dev:latest || exit 0']
   waitFor: ['-']
 
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Build Image'
-  dir: '/backend'
+  dir: 'backend'
   args:
     - 'build'
     - '--cache-from'
@@ -63,7 +63,7 @@ steps:
 
 - name: 'gcr.io/$PROJECT_ID/country-view-dev:$COMMIT_SHA'
   id: 'Unit Test Backend'
-  dir: '/backend'
+  dir: 'backend'
   entrypoint: '/bin/sh'
   args: ['-c', 'pip install -r requirements-tests.txt && pytest']
   secretEnv: ['APP_SECRETS']
@@ -71,7 +71,7 @@ steps:
 
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Push Image'
-  dir: '/backend'
+  dir: 'backend'
   args: ['push', 'gcr.io/$PROJECT_ID/country-view-dev', '--all-tags']
   waitFor: ['Unit Test Backend', 'Unit Test Frontend']
 
@@ -80,7 +80,7 @@ steps:
 # ---------------
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   id: 'Deploy to Cloud Run'
-  dir: '/backend'
+  dir: 'backend'
   entrypoint: 'gcloud'
   args: ['run', 'deploy', 'country-view-dev', '--region', 'us-central1',
          '--image', 'gcr.io/$PROJECT_ID/country-view-dev:$COMMIT_SHA',
@@ -93,7 +93,7 @@ steps:
 
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   id: 'Deploy to Firebase'
-  dir: '/frontend'
+  dir: 'frontend'
   entrypoint: 'bash'
   args: ['firebase hosting:channel:deploy dev']
   secretEnv: ['FIREBASE_API_KEY']
