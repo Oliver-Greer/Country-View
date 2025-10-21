@@ -65,8 +65,8 @@ steps:
   id: 'Unit Test Backend'
   dir: '/backend'
   entrypoint: '/bin/sh'
-  args: ['-c', 'pip install -r requirements-dev.txt && pytest']
-  secretEnv: ['APP_SECRETS_JSON']
+  args: ['-c', 'pip install -r requirements-tests.txt && pytest']
+  secretEnv: ['APP_SECRETS']
   waitFor: ['Build Image']
 
 - name: 'gcr.io/cloud-builders/docker'
@@ -87,7 +87,7 @@ steps:
          '--platform', 'managed',
          '--no-traffic',
          '--tag=GREEN',
-         '--set-secrets=APP_SECRETS_JSON=APP_SECRETS_JSON:latest',
+         '--set-secrets=APP_SECRETS=APP_SECRETS:latest',
          '--cpu=2', '--memory=4Gi']
   waitFor: ['Push Image']
 
@@ -101,8 +101,8 @@ steps:
 
 availableSecrets:
   secretManager:
-  - versionName: 'projects/$PROJECT_ID/secrets/APP_SECRETS_JSON/versions/latest'
-    env: 'APP_SECRETS_JSON'
+  - versionName: 'projects/$PROJECT_ID/secrets/APP_SECRETS/versions/latest'
+    env: 'APP_SECRETS'
   - versionName: 'projects/$PROJECT_ID/secrets/FIREBASE_API_KEY/versions/latest'
     env: 'FIREBASE_API_KEY'
 
