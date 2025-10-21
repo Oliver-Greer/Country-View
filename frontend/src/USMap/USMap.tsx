@@ -37,7 +37,7 @@ const initialMapState: MapState = {
   selectedName: localStorage.getItem("selectedName") || "",
 };
 
-export interface USMapProps {
+interface USMapProps {
   setStateClicked: React.Dispatch<React.SetStateAction<boolean>>;
 }
 

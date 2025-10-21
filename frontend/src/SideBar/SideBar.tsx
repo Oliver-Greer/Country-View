@@ -1,11 +1,10 @@
-export interface SideBarProps {
-  isOpen: boolean;
+interface SideBarProps {
+  isStateClicked: boolean;
 }
 
-const SideBar: React.FC<SideBarProps> = ({ isOpen }) => {
-  console.log(isOpen);
+const SideBar: React.FC<SideBarProps> = ({ isStateClicked }) => {
   let transitionState = "transform translate-x-0";
-  if (!isOpen) {
+  if (!isStateClicked) {
     transitionState = "transform -translate-x-[25vw]";
   }
   const baseClasses =

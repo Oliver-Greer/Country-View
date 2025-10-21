@@ -15,7 +15,7 @@ function App() {
     <>
       <div className="pageLayout z-0 w-screen bg-linear-to-t from-zinc-800 to-red-950">
         <div>
-          <SideBar isOpen={isStateClicked} />
+          <SideBar isStateClicked={isStateClicked} />
           <USMap setStateClicked={setStateClicked} />
         </div>
       </div>
