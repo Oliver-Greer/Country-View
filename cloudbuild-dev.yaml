@@ -1,0 +1,110 @@
+# -----------------
+# This is the build file ONLY for Dev deployment
+# WORKFLOW:
+# -> Build Phase:
+  # -> Install npm dependencies
+  # -> Unit test react components with Jest
+  # -> Build frontend with npm
+  # -> Check GCP artifact registry for existing Docker images
+  # -> Build Docker image if there isn't an existing one
+  # -> Test container(backend) with pytest unit tests
+  # -> Push image to artifact registry
+# -> Deployment Phase
+  # -> Deploy backend service to Cloud Run
+  # -> Deploy frontend to firebase with dev hosting channel
+# -----------------
+
+steps:
+
+# ----------------
+# BUILD PHASE
+# ----------------
+- name: 'node'
+  id: 'Install npm Dependencies'
+  dir: '/frontend'
+  entrypoint: 'npm'
+  args: ['install']
+  waitFor: ['-']
+
+- name: 'node'
+  id: 'Unit Test Frontend'
+  dir: '/frontend'
+  entrypoint: 'npm'
+  args: ['test']
+  waitFor: ['Install npm Dependencies']
+
+- name: 'node'
+  id: 'Build Frontend'
+  dir: '/frontend'
+  entrypoint: 'npm'
+  args: ['build']
+  waitFor: ['Unit Test Frontend']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Pull Cache'
+  dir: '/backend'
+  entrypoint: 'bash'
+  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/country-view-dev:latest || exit 0']
+  waitFor: ['-']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build Image'
+  dir: '/backend'
+  args:
+    - 'build'
+    - '--cache-from'
+    - 'gcr.io/$PROJECT_ID/country-view-dev:latest'
+    - '-t'
+    - 'gcr.io/$PROJECT_ID/country-view-dev:$COMMIT_SHA'
+    - '-t'
+    - 'gcr.io/$PROJECT_ID/country-view-dev:latest'
+    - '.'
+  waitFor: ['Pull Cache']
+
+- name: 'gcr.io/$PROJECT_ID/country-view-dev:$COMMIT_SHA'
+  id: 'Unit Test Backend'
+  dir: '/backend'
+  entrypoint: '/bin/sh'
+  args: ['-c', 'pip install -r requirements-tests.txt && pytest']
+  secretEnv: ['APP_SECRETS']
+  waitFor: ['Build Image']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push Image'
+  dir: '/backend'
+  args: ['push', 'gcr.io/$PROJECT_ID/country-view-dev', '--all-tags']
+  waitFor: ['Unit Test Backend', 'Unit Test Frontend']
+
+# ---------------
+# DEPLOYMENT PHASE
+# ---------------
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  id: 'Deploy to Cloud Run'
+  dir: '/backend'
+  entrypoint: 'gcloud'
+  args: ['run', 'deploy', 'country-view-dev', '--region', 'us-central1',
+         '--image', 'gcr.io/$PROJECT_ID/country-view-dev:$COMMIT_SHA',
+         '--platform', 'managed',
+         '--no-traffic',
+         '--tag=GREEN',
+         '--set-secrets=APP_SECRETS=APP_SECRETS:latest',
+         '--cpu=2', '--memory=4Gi']
+  waitFor: ['Push Image']
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  id: 'Deploy to Firebase'
+  dir: '/frontend'
+  entrypoint: 'bash'
+  args: ['firebase hosting:channel:deploy dev']
+  secretEnv: ['FIREBASE_API_KEY']
+  waitFor: ['Push Image']
+
+availableSecrets:
+  secretManager:
+  - versionName: 'projects/$PROJECT_ID/secrets/APP_SECRETS/versions/latest'
+    env: 'APP_SECRETS'
+  - versionName: 'projects/$PROJECT_ID/secrets/FIREBASE_API_KEY/versions/latest'
+    env: 'FIREBASE_API_KEY'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
