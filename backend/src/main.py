@@ -4,6 +4,5 @@ app = FastAPI()
 
 
 @app.get("/")
-def read_root():
-    x = 2
+async def read_root():
     return {"app": "online"}
