@@ -1,4 +1,4 @@
-const getLocalStorage = (name: string) => {
+export const getLocalStorage = (name: string) => {
   try {
     return localStorage.getItem(name);
   } catch {
@@ -6,4 +6,8 @@ const getLocalStorage = (name: string) => {
   }
 };
 
-export default getLocalStorage;
+export const setLocalStorage = (name: string, value: string) => {
+  try {
+    localStorage.setItem(name, value);
+  } catch {}
+};

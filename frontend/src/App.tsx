@@ -2,7 +2,10 @@ import "./App.css";
 import SideBar from "./SideBar/SideBar.tsx";
 import USMap from "./USMap/USMap.tsx";
 import { useReducer, useEffect } from "react";
-import getLocalStorage from "./utilities/localStorageHandler.tsx";
+import {
+  getLocalStorage,
+  setLocalStorage,
+} from "./utilities/localStorageHandler.tsx";
 
 export type SelectedStateState = {
   selectedName: string;
@@ -47,10 +50,10 @@ function App() {
   );
 
   useEffect(() => {
-    localStorage.setItem("selectedName", selectedStateState.selectedName);
+    setLocalStorage("selectedName", selectedStateState.selectedName);
   }, [selectedStateState.selectedName]);
   useEffect(() => {
-    localStorage.setItem(
+    setLocalStorage(
       "isStateClicked",
       selectedStateState.isStateClicked.toString(),
     );

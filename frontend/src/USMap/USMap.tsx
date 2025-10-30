@@ -3,7 +3,10 @@ import StateData from "../StateData/StateData.tsx";
 import type { ClickStateAction } from "../App.tsx";
 import "./USMap.css";
 import { useRef, useEffect, useReducer, type ActionDispatch } from "react";
-import getLocalStorage from "../utilities/localStorageHandler.tsx";
+import {
+  getLocalStorage,
+  setLocalStorage,
+} from "../utilities/localStorageHandler.tsx";
 
 type MapState = {
   viewBox: string;
@@ -50,10 +53,10 @@ const USMap: React.FC<USMapProps> = ({ dispatchSelectedState }) => {
   const [mapState, dispatchMapState] = useReducer(mapReducer, initialMapState);
 
   useEffect(() => {
-    localStorage.setItem("viewBox", mapState.viewBox);
+    setLocalStorage("viewBox", mapState.viewBox);
   }, [mapState.viewBox]);
   useEffect(() => {
-    localStorage.setItem("targetViewBox", mapState.targetViewBox);
+    setLocalStorage("targetViewBox", mapState.targetViewBox);
   }, [mapState.targetViewBox]);
 
   const animateViewBox = (target: string, duration = 1000) => {
