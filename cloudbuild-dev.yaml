@@ -91,11 +91,10 @@ steps:
          '--cpu=2', '--memory=4Gi']
   waitFor: ['Push Image']
 
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+- name: '- name: us-docker.pkg.dev/firebase-cli/us/firebase'
   id: 'Deploy to Firebase'
   dir: 'frontend'
-  entrypoint: 'bash'
-  args: ['firebase hosting:channel:deploy dev']
+  args: ['hosting:channel:deploy', 'dev']
   secretEnv: ['FIREBASE_API_KEY']
   waitFor: ['Push Image']
 
