@@ -2,6 +2,7 @@ import "./App.css";
 import SideBar from "./SideBar/SideBar.tsx";
 import USMap from "./USMap/USMap.tsx";
 import { useReducer, useEffect } from "react";
+import getLocalStorage from "./utilities/localStorageHandler.tsx";
 
 export type SelectedStateState = {
   selectedName: string;
@@ -35,8 +36,8 @@ const selectedStateReducer = (
 
 const initialStateState: SelectedStateState = {
   isStateClicked:
-    JSON.parse(localStorage.getItem("isStateClicked") || "false") || false,
-  selectedName: localStorage.getItem("selectedName") || "",
+    JSON.parse(getLocalStorage("isStateClicked") || "false") || false,
+  selectedName: getLocalStorage("selectedName") || "",
 };
 
 function App() {
