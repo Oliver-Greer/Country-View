@@ -1,12 +1,12 @@
 import state_data from "../../public/state_data.json";
 import StateData from "../StateData/StateData.tsx";
+import type { ClickStateAction } from "../App.tsx";
 import "./USMap.css";
-import { useRef, useEffect, useReducer } from "react";
+import { useRef, useEffect, useReducer, type ActionDispatch } from "react";
 
 type MapState = {
   viewBox: string;
   targetViewBox: string;
-  selectedName: string;
 };
 
 type MapSetViewboxAction = {
@@ -19,26 +19,17 @@ type MapSetTargetViewboxAction = {
   payload: string;
 };
 
-type MapSetSelectedNameAction = {
-  type: "SET_SELECTED_NAME";
-  payload: string;
-};
-
-type MapAction =
-  | MapSetViewboxAction
-  | MapSetTargetViewboxAction
-  | MapSetSelectedNameAction;
+type MapAction = MapSetViewboxAction | MapSetTargetViewboxAction;
 
 const initialViewBox = "0 0 2000 1700";
 
 const initialMapState: MapState = {
   viewBox: localStorage.getItem("viewBox") || initialViewBox,
   targetViewBox: localStorage.getItem("targetViewBox") || initialViewBox,
-  selectedName: localStorage.getItem("selectedName") || "",
 };
 
 interface USMapProps {
-  setStateClicked: React.Dispatch<React.SetStateAction<boolean>>;
+  dispatchSelectedState: ActionDispatch<[action: ClickStateAction]>;
 }
 
 const mapReducer = (state: MapState, action: MapAction) => {
@@ -47,14 +38,12 @@ const mapReducer = (state: MapState, action: MapAction) => {
       return { ...state, viewBox: action.payload };
     case "SET_TARGET_VIEWBOX":
       return { ...state, targetViewBox: action.payload };
-    case "SET_SELECTED_NAME":
-      return { ...state, selectedName: action.payload };
     default:
       throw new Error();
   }
 };
 
-const USMap: React.FC<USMapProps> = ({ setStateClicked }) => {
+const USMap: React.FC<USMapProps> = ({ dispatchSelectedState }) => {
   const animationRef = useRef<number | null>(null);
 
   const [mapState, dispatchMapState] = useReducer(mapReducer, initialMapState);
@@ -65,9 +54,6 @@ const USMap: React.FC<USMapProps> = ({ setStateClicked }) => {
   useEffect(() => {
     localStorage.setItem("targetViewBox", mapState.targetViewBox);
   }, [mapState.targetViewBox]);
-  useEffect(() => {
-    localStorage.setItem("selectedName", mapState.selectedName);
-  }, [mapState.selectedName]);
 
   const animateViewBox = (target: string, duration = 1000) => {
     dispatchMapState({ type: "SET_TARGET_VIEWBOX", payload: target });
@@ -106,31 +92,21 @@ const USMap: React.FC<USMapProps> = ({ setStateClicked }) => {
     let newViewBox = `${bounds["x_min"] - (bounds["x_max"] - bounds["x_min"]) / 2} ${bounds["y_min"] - (bounds["y_max"] - bounds["y_min"]) / 2} ${(bounds["x_max"] - bounds["x_min"]) * 2} ${(bounds["y_max"] - bounds["y_min"]) * 2}`;
     if (newViewBox == mapState.targetViewBox) {
       newViewBox = initialViewBox;
-      setStateClicked(false);
-      dispatchMapState({ type: "SET_SELECTED_NAME", payload: "" });
+      dispatchSelectedState({ type: "SET_STATE_NOT_SELECTED" });
     } else {
-      setStateClicked(true);
-      dispatchMapState({ type: "SET_SELECTED_NAME", payload: name });
+      dispatchSelectedState({ type: "SET_STATE_SELECTED", payload: name });
     }
     animateViewBox(newViewBox);
   };
 
   const getStateColorLogic = () => {
-    // if majority of reps are repub, return red
-    // if majority are dem return blue
-    // otherwise return purple
-    // perhaps a gradient mapping would be nice
-    // should fetch asynchronously using axios and show loading screen, remember to use async and await
-    // This means the app main component needs to share some state and conditionally render a loading screen
+    // TODO: Make color depend on data in Firestore
     return { base: "#8f0000ff", hover: "#da0000ff" };
   };
 
   return (
     <>
       <div className="w-screen h-screen">
-        <p className="absolute z-3 top-10 inset-x-0 text-2xl md:text-4xl lg:text-6xl text-center text-zinc-300 font-sans font-bold">
-          {mapState.selectedName}
-        </p>
         <div className="z-1 flex items-center w-full">
           <svg className="w-screen h-screen flex " viewBox={mapState.viewBox}>
             {state_data.map((state) => {
@@ -160,3 +136,6 @@ const USMap: React.FC<USMapProps> = ({ setStateClicked }) => {
 };
 
 export default USMap;
+
+export { mapReducer };
+export type { MapAction, MapState };
