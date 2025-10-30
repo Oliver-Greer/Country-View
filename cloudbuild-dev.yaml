@@ -37,7 +37,7 @@ steps:
   id: 'Build Frontend'
   dir: 'frontend'
   entrypoint: 'npm'
-  args: ['build']
+  args: ['run', 'build']
   waitFor: ['Unit Test Frontend']
 
 - name: 'gcr.io/cloud-builders/docker'
