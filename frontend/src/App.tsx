@@ -39,7 +39,6 @@ const initialStateState: SelectedStateState = {
   selectedName: localStorage.getItem("selectedName") || "",
 };
 
-// move state up to App level
 function App() {
   const [selectedStateState, dispatchSelectedState] = useReducer(
     selectedStateReducer,
@@ -69,3 +68,5 @@ function App() {
 }
 
 export default App;
+
+export { selectedStateReducer };

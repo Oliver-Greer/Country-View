@@ -12,7 +12,7 @@ const SideBar: React.FC<SideBarProps> = ({ selectedStateState }) => {
   const baseClasses =
     "absolute ring-[1vw] z-1 h-screen align-center w-[25vw] rounded bg-zinc-800/90 ring-zinc-900 flex-none transition-transform duration-1000 ease-in-out";
 
-  //get data from backend and map over it
+  // TODO: Complete State specific data fetching from Firestore
   return (
     <div>
       <p className="absolute z-3 top-10 inset-x-0 text-2xl md:text-4xl lg:text-6xl text-center text-zinc-300 font-sans font-bold">

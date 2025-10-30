@@ -100,12 +100,7 @@ const USMap: React.FC<USMapProps> = ({ dispatchSelectedState }) => {
   };
 
   const getStateColorLogic = () => {
-    // if majority of reps are repub, return red
-    // if majority are dem return blue
-    // otherwise return purple
-    // perhaps a gradient mapping would be nice
-    // should fetch asynchronously using axios and show loading screen, remember to use async and await
-    // This means the app main component needs to share some state and conditionally render a loading screen
+    // TODO: Make color depend on data in Firestore
     return { base: "#8f0000ff", hover: "#da0000ff" };
   };
 
@@ -141,3 +136,6 @@ const USMap: React.FC<USMapProps> = ({ dispatchSelectedState }) => {
 };
 
 export default USMap;
+
+export { mapReducer };
+export type { MapAction, MapState };
