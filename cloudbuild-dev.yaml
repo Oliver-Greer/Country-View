@@ -91,7 +91,7 @@ steps:
          '--cpu=2', '--memory=4Gi']
   waitFor: ['Push Image']
 
-- name: '- name: us-docker.pkg.dev/firebase-cli/us/firebase'
+- name: 'us-docker.pkg.dev/firebase-cli/us/firebase'
   id: 'Deploy to Firebase'
   dir: 'frontend'
   args: ['hosting:channel:deploy', 'dev']
