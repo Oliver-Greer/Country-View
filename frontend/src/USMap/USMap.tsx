@@ -3,6 +3,7 @@ import StateData from "../StateData/StateData.tsx";
 import type { ClickStateAction } from "../App.tsx";
 import "./USMap.css";
 import { useRef, useEffect, useReducer, type ActionDispatch } from "react";
+import getLocalStorage from "../utilities/localStorageHandler.tsx";
 
 type MapState = {
   viewBox: string;
@@ -24,8 +25,8 @@ type MapAction = MapSetViewboxAction | MapSetTargetViewboxAction;
 const initialViewBox = "0 0 2000 1700";
 
 const initialMapState: MapState = {
-  viewBox: localStorage.getItem("viewBox") || initialViewBox,
-  targetViewBox: localStorage.getItem("targetViewBox") || initialViewBox,
+  viewBox: getLocalStorage("viewBox") || initialViewBox,
+  targetViewBox: getLocalStorage("targetViewBox") || initialViewBox,
 };
 
 interface USMapProps {
