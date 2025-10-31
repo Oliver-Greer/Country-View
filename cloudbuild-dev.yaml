@@ -85,8 +85,6 @@ steps:
   args: ['run', 'deploy', 'country-view-dev', '--region', 'us-central1',
          '--image', 'gcr.io/$PROJECT_ID/country-view-dev:$COMMIT_SHA',
          '--platform', 'managed',
-         '--no-traffic',
-         '--tag=GREEN',
          '--set-secrets=APP_SECRETS=APP_SECRETS:latest',
          '--cpu=2', '--memory=4Gi']
   waitFor: ['Push Image']
