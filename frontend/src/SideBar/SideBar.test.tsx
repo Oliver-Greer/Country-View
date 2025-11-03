@@ -12,7 +12,7 @@ describe("SideBar Component", () => {
           selectedNameAndID: { selectedName: "California", selectedID: "CA" },
           isLoading: false,
           isError: false,
-          reps: [],
+          reps: { members: [] },
         }}
       />,
     );

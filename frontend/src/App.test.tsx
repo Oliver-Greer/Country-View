@@ -13,7 +13,7 @@ describe("State Reducer", () => {
       selectedNameAndID: { selectedName: "California", selectedID: "CA" },
       isLoading: false,
       isError: false,
-      reps: [],
+      reps: { members: [] },
     };
 
     const newState: SelectedStateState = selectedStateReducer(
@@ -26,7 +26,7 @@ describe("State Reducer", () => {
       selectedNameAndID: { selectedName: "", selectedID: "" },
       isLoading: false,
       isError: false,
-      reps: [],
+      reps: { members: [] },
     };
 
     expect(newState).toStrictEqual(expectedState);
@@ -40,7 +40,7 @@ describe("State Reducer", () => {
     const currentState: SelectedStateState = {
       isStateClicked: false,
       selectedNameAndID: { selectedName: "", selectedID: "" },
-      reps: [],
+      reps: { members: [] },
       isError: false,
       isLoading: false,
     };
@@ -53,7 +53,7 @@ describe("State Reducer", () => {
     const expectedState: SelectedStateState = {
       isStateClicked: true,
       selectedNameAndID: { selectedName: "California", selectedID: "CA" },
-      reps: [],
+      reps: { members: [] },
       isError: false,
       isLoading: false,
     };
