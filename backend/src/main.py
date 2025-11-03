@@ -1,4 +1,3 @@
-import json
 import os
 
 import requests
@@ -14,11 +13,6 @@ settings = Settings()
 app = FastAPI()
 
 
-@app.get("/")
-async def read_root():
-    return {"app": "online"}
-
-
 @app.get("/api/members")
 async def get_members(state: str):
 
@@ -31,6 +25,9 @@ async def get_members(state: str):
             "format": "json",
             "currentMember": True,
             "limit": 250,
+        },
+        headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         },
     )
 
