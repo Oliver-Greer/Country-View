@@ -143,7 +143,7 @@ function App() {
     if (selectedStateState.isStateClicked) {
       handleFetchStateReps();
     }
-  }, [handleFetchStateReps]);
+  }, [handleFetchStateReps, selectedStateState.selectedNameAndID.selectedID]);
 
   return (
     <>
