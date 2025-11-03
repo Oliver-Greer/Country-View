@@ -8,10 +8,21 @@ import {
 } from "./utilities/localStorageHandler.tsx";
 import axios from "axios";
 
+export interface Member {
+  name: string;
+  party: string;
+  chamber: string;
+  district?: string;
+}
+
+interface RepsData {
+  members: Member[];
+}
+
 export type SelectedStateState = {
   selectedNameAndID: Record<any, string>;
   isStateClicked: boolean;
-  reps: Record<any, any>;
+  reps: RepsData;
   isLoading: boolean;
   isError: boolean;
 };
@@ -31,7 +42,7 @@ type RepsFetchInit = {
 
 type RepsFetchSuccess = {
   type: "REPS_FETCH_SUCCESS";
-  payload: Record<any, any>;
+  payload: RepsData;
 };
 
 type RepsFetchError = {
