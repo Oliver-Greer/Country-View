@@ -4,6 +4,10 @@ interface SideBarProps {
   selectedStateState: SelectedStateState;
 }
 
+interface SideBarEntryProps {
+  member: Record<string, string>;
+}
+
 const SideBar: React.FC<SideBarProps> = ({ selectedStateState }) => {
   let transitionState = "transform translate-x-0";
   if (!selectedStateState.isStateClicked) {
@@ -12,11 +16,10 @@ const SideBar: React.FC<SideBarProps> = ({ selectedStateState }) => {
   const baseClasses =
     "absolute ring-[1vw] z-1 h-screen align-center w-[25vw] rounded bg-zinc-800/90 ring-zinc-900 flex-none transition-transform duration-1000 ease-in-out";
 
-  // TODO: Complete State specific data fetching from Firestore
   return (
     <div>
       <p className="absolute z-3 top-10 inset-x-0 text-2xl md:text-4xl lg:text-6xl text-center text-zinc-300 font-sans font-bold">
-        {selectedStateState.selectedName}
+        {selectedStateState.selectedNameAndID.selectedName}
       </p>
       <div className={`${baseClasses} ${transitionState}`}>
         <div className="w-full flex flex-col items-center pt-10 px-4 overflow-y-auto max-h-full">
@@ -24,18 +27,22 @@ const SideBar: React.FC<SideBarProps> = ({ selectedStateState }) => {
             Representatives
           </p>
           <div className="w-full space-y-4 flex-grow">
-            <p className="text-center text-1xl md:text-2xl lg:text-4xl font-sans font-bold">
-              1
-            </p>
-            <p className="text-center text-1xl md:text-2xl lg:text-4xl font-sans font-bold">
-              2
-            </p>
-            <p className="text-center text-1xl md:text-2xl lg:text-4xl font-sans font-bold">
-              3
-            </p>
+            {Array.from(selectedStateState.reps.members).map((member: any) => {
+              return <SideBarEntry member={member}></SideBarEntry>;
+            })}
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const SideBarEntry: React.FC<SideBarEntryProps> = ({ member }) => {
+  return (
+    <div>
+      <>{member.name}</>
+      <>{member.party}</>
+      <>{member.chamber}</>
     </div>
   );
 };
