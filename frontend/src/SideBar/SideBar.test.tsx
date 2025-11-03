@@ -7,7 +7,13 @@ describe("SideBar Component", () => {
   it("Renders Text", () => {
     render(
       <SideBar
-        selectedStateState={{ selectedName: "Delware", isStateClicked: true }}
+        selectedStateState={{
+          isStateClicked: true,
+          selectedNameAndID: { selectedName: "California", selectedID: "CA" },
+          isLoading: false,
+          isError: false,
+          reps: [],
+        }}
       />,
     );
 
