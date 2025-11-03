@@ -1,3 +1,4 @@
+import json
 import os
 
 import requests
@@ -13,7 +14,12 @@ settings = Settings()
 app = FastAPI()
 
 
-@app.get("/api/members")
+@app.get("/")
+async def read_root():
+    return {"app": "online"}
+
+
+@app.get("/members/")
 async def get_members(state: str):
 
     congress_member_endpoint = f"https://api.congress.gov/v3/member/{state}"
