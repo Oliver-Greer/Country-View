@@ -5,7 +5,6 @@
     "rewrites": [
       {
         "source": "/api/**",
-        "destination": "/index.html",
         "run": {
           "serviceId": "country-view-dev",
           "region": "us-central1"
