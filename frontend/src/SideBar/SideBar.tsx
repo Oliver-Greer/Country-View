@@ -1,11 +1,15 @@
-import type { SelectedStateState } from "../App.tsx";
+import type { SelectedStateState, Member } from "../App.tsx";
 
 interface SideBarProps {
   selectedStateState: SelectedStateState;
 }
 
+interface RepsListComponentProps {
+  selectedStateState: SelectedStateState;
+}
+
 interface SideBarEntryProps {
-  member: Record<string, string>;
+  member: Member;
 }
 
 const SideBar: React.FC<SideBarProps> = ({ selectedStateState }) => {
@@ -26,13 +30,32 @@ const SideBar: React.FC<SideBarProps> = ({ selectedStateState }) => {
           <p className="text-center text-2xl md:text-4xl lg:text-6xl font-sans font-bold mb-20">
             Representatives
           </p>
-          <div className="w-full space-y-4 flex-grow">
-            {Array.from(selectedStateState.reps.members).map((member: any) => {
-              return <SideBarEntry member={member}></SideBarEntry>;
-            })}
-          </div>
+          <RepsListComponent
+            selectedStateState={selectedStateState}
+          ></RepsListComponent>
         </div>
       </div>
+    </div>
+  );
+};
+
+const RepsListComponent: React.FC<RepsListComponentProps> = ({
+  selectedStateState,
+}) => {
+  const allMembers = selectedStateState.reps.members;
+  const isArray = Array.isArray(allMembers);
+
+  return (
+    <div className="w-full space-y-4 flex-grow">
+      {isArray && allMembers.length > 0 ? (
+        allMembers.map((member, index) => {
+          return <SideBarEntry key={index} member={member} />;
+        })
+      ) : (
+        <div className="p-4 text-center text-gray-500">
+          No representatives found for this state.
+        </div>
+      )}
     </div>
   );
 };
@@ -43,6 +66,7 @@ const SideBarEntry: React.FC<SideBarEntryProps> = ({ member }) => {
       <>{member.name}</>
       <>{member.party}</>
       <>{member.chamber}</>
+      <>{member.district}</>
     </div>
   );
 };

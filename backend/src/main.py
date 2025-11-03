@@ -52,9 +52,7 @@ async def get_members(state: str):
         all_member_data.append(member_info)
 
     structured_response = {
-        "status_code": response.status_code,
         "members": all_member_data,
-        "number_of_reps": len(all_member_data),
     }
 
     return structured_response
