@@ -92,13 +92,20 @@ const USMap: React.FC<USMapProps> = ({ dispatchSelectedState }) => {
     animationRef.current = requestAnimationFrame(stepThroughAnimation);
   };
 
-  const handleClick = (bounds: Record<string, number>, name: string) => {
+  const handleClick = (
+    bounds: Record<string, number>,
+    name: string,
+    id: string,
+  ) => {
     let newViewBox = `${bounds["x_min"] - (bounds["x_max"] - bounds["x_min"]) / 2} ${bounds["y_min"] - (bounds["y_max"] - bounds["y_min"]) / 2} ${(bounds["x_max"] - bounds["x_min"]) * 2} ${(bounds["y_max"] - bounds["y_min"]) * 2}`;
     if (newViewBox == mapState.targetViewBox) {
       newViewBox = initialViewBox;
       dispatchSelectedState({ type: "SET_STATE_NOT_SELECTED" });
     } else {
-      dispatchSelectedState({ type: "SET_STATE_SELECTED", payload: name });
+      dispatchSelectedState({
+        type: "SET_STATE_SELECTED",
+        payload: { selectedName: name, selectedID: id },
+      });
     }
     animateViewBox(newViewBox);
   };
@@ -123,7 +130,7 @@ const USMap: React.FC<USMapProps> = ({ dispatchSelectedState }) => {
                   id={state.id}
                   path={state.path}
                   click={() => {
-                    handleClick(state.bounds, state.name);
+                    handleClick(state.bounds, state.name, state.id);
                   }}
                   style={{
                     fill: colors.base,
