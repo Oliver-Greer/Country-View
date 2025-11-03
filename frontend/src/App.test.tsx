@@ -10,7 +10,10 @@ describe("State Reducer", () => {
     const action: ClickStateAction = { type: "SET_STATE_NOT_SELECTED" };
     const currentState: SelectedStateState = {
       isStateClicked: true,
-      selectedName: "Nebraska",
+      selectedNameAndID: { selectedName: "California", selectedID: "CA" },
+      isLoading: false,
+      isError: false,
+      reps: [],
     };
 
     const newState: SelectedStateState = selectedStateReducer(
@@ -20,7 +23,10 @@ describe("State Reducer", () => {
 
     const expectedState: SelectedStateState = {
       isStateClicked: false,
-      selectedName: "",
+      selectedNameAndID: { selectedName: "", selectedID: "" },
+      isLoading: false,
+      isError: false,
+      reps: [],
     };
 
     expect(newState).toStrictEqual(expectedState);
@@ -29,11 +35,14 @@ describe("State Reducer", () => {
   it("sets isStateClicked to true and name to change on SELECTED action", () => {
     const action: ClickStateAction = {
       type: "SET_STATE_SELECTED",
-      payload: "Nebraska",
+      payload: { selectedName: "California", selectedID: "CA" },
     };
     const currentState: SelectedStateState = {
       isStateClicked: false,
-      selectedName: "",
+      selectedNameAndID: { selectedName: "", selectedID: "" },
+      reps: [],
+      isError: false,
+      isLoading: false,
     };
 
     const newState: SelectedStateState = selectedStateReducer(
@@ -43,7 +52,10 @@ describe("State Reducer", () => {
 
     const expectedState: SelectedStateState = {
       isStateClicked: true,
-      selectedName: "Nebraska",
+      selectedNameAndID: { selectedName: "California", selectedID: "CA" },
+      reps: [],
+      isError: false,
+      isLoading: false,
     };
 
     expect(newState).toStrictEqual(expectedState);
