@@ -1,6 +1,6 @@
 FROM python:3.14-slim
 
-WORKDIR /
+WORKDIR /backend
 
 COPY requirements.txt .
 
