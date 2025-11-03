@@ -105,12 +105,12 @@ function App() {
   );
 
   const handleFetchStateReps = useCallback(async () => {
-    if (!selectedStateState.selectedNameAndID.id) return;
+    if (!selectedStateState.selectedNameAndID.selectedID) return;
 
     dispatchSelectedState({ type: "REPS_FETCH_INIT" });
 
     const firebaseHostingUrl = window.location.href;
-    const url = `${firebaseHostingUrl}/api/members?state=${selectedStateState.selectedNameAndID.id}`;
+    const url = `${firebaseHostingUrl}/api/members?state=${selectedStateState.selectedNameAndID.selectedID}`;
 
     try {
       const result = await axios.get(url);
@@ -122,7 +122,7 @@ function App() {
     } catch {
       dispatchSelectedState({ type: "REPS_FETCH_ERROR" });
     }
-  }, [selectedStateState.selectedNameAndID.id]);
+  }, [selectedStateState.selectedNameAndID.selectedID]);
 
   useEffect(() => {
     setLocalStorage(
