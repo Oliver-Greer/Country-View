@@ -13,6 +13,11 @@ settings = Settings()
 app = FastAPI()
 
 
+@app.get("/")
+async def read_root():
+    return {"app": "online"}
+
+
 @app.get("/api/members")
 async def get_members(state: str):
 
