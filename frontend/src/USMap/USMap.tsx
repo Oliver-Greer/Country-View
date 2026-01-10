@@ -97,9 +97,7 @@ const USMap: React.FC<USMapProps> = ({ dispatchSelectedState }) => {
     name: string,
     id: string,
   ) => {
-    let newViewBox = `${bounds["x_min"] - (bounds["x_max"] - bounds["x_min"]) / 2}
-      ${bounds["y_min"] - (bounds["y_max"] - bounds["y_min"]) / 2}
-      ${(bounds["x_max"] - bounds["x_min"]) * 2} ${(bounds["y_max"] - bounds["y_min"]) * 2}`;
+    let newViewBox = `${bounds["x_min"] - (bounds["x_max"] - bounds["x_min"]) / 2} ${bounds["y_min"] - (bounds["y_max"] - bounds["y_min"]) / 2} ${(bounds["x_max"] - bounds["x_min"]) * 2} ${(bounds["y_max"] - bounds["y_min"]) * 2}`;
     if (newViewBox == mapState.targetViewBox) {
       newViewBox = initialViewBox;
       dispatchSelectedState({ type: "SET_STATE_NOT_SELECTED" });
