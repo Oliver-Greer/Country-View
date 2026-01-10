@@ -19,4 +19,6 @@ describe("SideBar Component", () => {
 
     expect(screen.getByText("Representatives")).toBeInTheDocument();
   });
+
+  //TODO: Add more comprehensive tests
 });
