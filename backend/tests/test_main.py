@@ -14,5 +14,9 @@ def test_get_members():
     response = client.get(f"/api/members?state={state}")
     assert response.status_code == 200
     data = response.json()
-    assert "members" in data and "name" in data
-    assert "party" in data and "chamber" in data and "district" in data
+    assert "members" in data
+    for member in data["members"]:
+        assert "name" in member
+        assert "party" in member
+        assert "chamber" in member
+        assert "district" in member
