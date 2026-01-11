@@ -1,5 +1,5 @@
 # -----------------
-# This is the build file ONLY for Dev deployment
+# This is the build file ONLY for Production deployment
 # WORKFLOW:
 # -> Build Phase:
   # -> Install npm dependencies
@@ -11,8 +11,11 @@
   # -> Push image to artifact registry
 # -> Deployment Phase
   # -> Deploy backend service to Cloud Run
-  # -> Deploy frontend to firebase with dev hosting channel
+  # -> Install jq. Use Bash to modify firebase.json to point to the production backend service
+  # -> Deploy frontend to firebase without hosting channel setting
 # -----------------
+
+# TODO: Figure out how to deploy backend with no traffic and then shift traffic
 
 steps:
 
@@ -44,7 +47,7 @@ steps:
   id: 'Pull Cache'
   dir: 'backend'
   entrypoint: 'bash'
-  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/country-view-dev:latest || exit 0']
+  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/country-view:latest || exit 0']
   waitFor: ['-']
 
 - name: 'gcr.io/cloud-builders/docker'
@@ -53,15 +56,15 @@ steps:
   args:
     - 'build'
     - '--cache-from'
-    - 'gcr.io/$PROJECT_ID/country-view-dev:latest'
+    - 'gcr.io/$PROJECT_ID/country-view:latest'
     - '-t'
-    - 'gcr.io/$PROJECT_ID/country-view-dev:$COMMIT_SHA'
+    - 'gcr.io/$PROJECT_ID/country-view:$COMMIT_SHA'
     - '-t'
-    - 'gcr.io/$PROJECT_ID/country-view-dev:latest'
+    - 'gcr.io/$PROJECT_ID/country-view:latest'
     - '.'
   waitFor: ['Pull Cache']
 
-- name: 'gcr.io/$PROJECT_ID/country-view-dev:$COMMIT_SHA'
+- name: 'gcr.io/$PROJECT_ID/country-view:$COMMIT_SHA'
   id: 'Unit Test Backend'
   dir: 'backend'
   entrypoint: '/bin/sh'
@@ -72,7 +75,7 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Push Image'
   dir: 'backend'
-  args: ['push', 'gcr.io/$PROJECT_ID/country-view-dev', '--all-tags']
+  args: ['push', 'gcr.io/$PROJECT_ID/country-view', '--all-tags']
   waitFor: ['Unit Test Backend', 'Unit Test Frontend']
 
 # ---------------
@@ -82,19 +85,29 @@ steps:
   id: 'Deploy to Cloud Run'
   dir: 'backend'
   entrypoint: 'gcloud'
-  args: ['run', 'deploy', 'country-view-dev', '--region', 'us-central1',
-         '--image', 'gcr.io/$PROJECT_ID/country-view-dev:$COMMIT_SHA',
+  args: ['run', 'deploy', 'country-view', '--region', 'us-central1',
+         '--image', 'gcr.io/$PROJECT_ID/country-view:$COMMIT_SHA',
          '--platform', 'managed',
          '--set-secrets=CONGRESS_API_KEY=CONGRESS_API_KEY:latest',
          '--cpu=2', '--memory=4Gi']
   waitFor: ['Push Image']
 
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'Modify firebase.json'
+  dir: 'frontend'
+  args:
+    - 'c'
+    - |
+      apt-get update && apt-get install -y jq
+      jq '.serviceId' = "country-view" <<<"$jsonStr"
+  waitFor: ['Push Image']
+
 - name: 'us-docker.pkg.dev/firebase-cli/us/firebase'
   id: 'Deploy to Firebase'
   dir: 'frontend'
-  args: ['hosting:channel:deploy', 'dev']
+  args: ['deploy', '--only', 'hosting']
   secretEnv: ['FIREBASE_API_KEY']
-  waitFor: ['Push Image']
+  waitFor: ['Push Image', 'Modify firebase.json']
 
 availableSecrets:
   secretManager:
