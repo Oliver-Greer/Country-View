@@ -41,11 +41,18 @@ async def get_members(state: str):
 
     response_json = response.json()
     all_member_data = []
-    for member in response_json["members"]:
+    for member in response_json.get("members", []):
+
+        term_items = member.get("terms", {}).get("item", [])
+
+        current_chamber = "Unknown"
+        if term_items:
+            current_chamber = term_items[-1].get("chamber", "Unknown")
+
         member_info = {
-            "name": member["name"],
-            "party": member["partyName"],
-            "chamber": member["terms"]["item"][-1]["chamber"],
+            "name": member.get("name", "Unknown"),
+            "party": member.get("partyName", "Unknown"),
+            "chamber": current_chamber,
         }
         if member.get("district"):
             member_info["district"] = member["district"]

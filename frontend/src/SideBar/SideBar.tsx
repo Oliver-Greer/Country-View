@@ -42,27 +42,21 @@ const SideBar: React.FC<SideBarProps> = ({ selectedStateState }) => {
 const RepsListComponent: React.FC<RepsListComponentProps> = ({
   selectedStateState,
 }) => {
-  try {
-    const allMembers = selectedStateState.reps.members;
-    console.log(allMembers);
-    const isArray = Array.isArray(allMembers);
+  const allMembers = selectedStateState.reps?.members || [];
 
-    return (
-      <div className="w-full space-y-4 flex-grow">
-        {isArray && allMembers.length > 0 ? (
-          allMembers.map((member, index) => {
-            return <SideBarEntry key={index} member={member} />;
-          })
-        ) : (
-          <div className="p-4 text-center text-gray-500">
-            No representatives found for this state.
-          </div>
-        )}
-      </div>
-    );
-  } catch {
-    return <></>;
-  }
+  return (
+    <div className="w-full space-y-4 flex-grow">
+      {allMembers.length > 0 ? (
+        allMembers.map((member, index) => {
+          return <SideBarEntry key={index} member={member} />;
+        })
+      ) : (
+        <div className="p-4 text-center text-gray-500">
+          No representatives found for this state.
+        </div>
+      )}
+    </div>
+  );
 };
 
 const SideBarEntry: React.FC<SideBarEntryProps> = ({ member }) => {
