@@ -92,14 +92,14 @@ steps:
          '--cpu=2', '--memory=4Gi']
   waitFor: ['Push Image']
 
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+- name: 'gcr.io/cloud-builders/gcloud'
   id: 'Modify firebase.json'
   dir: 'frontend'
-  entrypoint: 'bash'
   args:
-    - '-c'
-    - |-
-      apt-get update && apt-get install -y jq && jq '.serviceId' = "country-view" <<<"$jsonStr"
+    - 'c'
+    - |
+      apt-get update && apt-get install -y jq
+      jq '.serviceId' = "country-view" <<<"$jsonStr"
   waitFor: ['Push Image']
 
 - name: 'us-docker.pkg.dev/firebase-cli/us/firebase'
