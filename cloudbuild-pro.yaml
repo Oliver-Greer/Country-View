@@ -92,14 +92,18 @@ steps:
          '--cpu=2', '--memory=4Gi']
   waitFor: ['Push Image']
 
-- name: 'gcr.io/cloud-builders/gcloud'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   id: 'Modify firebase.json'
   dir: 'frontend'
+  entrypoint: 'bash'
   args:
-    - 'c'
+    - '-c'
     - |
       apt-get update && apt-get install -y jq
-      jq '.serviceId' = "country-view" <<<"$jsonStr"
+      tmpfile=$(mktemp)
+      cp firebase.json "$tmpfile"
+      jq (.hosting.rewrites[0].run | select(.serviceId == "country-view-dev")).Value |= "county-view" "$tmpfile" >firebase.json
+      rm -f -- "$tmpfile"
   waitFor: ['Push Image']
 
 - name: 'us-docker.pkg.dev/firebase-cli/us/firebase'
@@ -107,7 +111,7 @@ steps:
   dir: 'frontend'
   args: ['deploy', '--only', 'hosting']
   secretEnv: ['FIREBASE_API_KEY']
-  waitFor: ['Push Image', 'Modify firebase.json']
+  waitFor: ['Modify firebase.json', 'Deploy to Cloud Run']
 
 availableSecrets:
   secretManager:
