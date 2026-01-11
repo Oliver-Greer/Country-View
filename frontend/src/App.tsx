@@ -128,7 +128,7 @@ function App() {
 
       dispatchSelectedState({
         type: "REPS_FETCH_SUCCESS",
-        payload: result.data.members,
+        payload: result.data,
       });
     } catch {
       dispatchSelectedState({ type: "REPS_FETCH_ERROR" });
