@@ -1,4 +1,5 @@
 import type { SelectedStateState, Member } from "../App.tsx";
+import { LoadingSpinner } from "../LoadingSpinner/LoadingSpinner.tsx";
 
 interface SideBarProps {
   selectedStateState: SelectedStateState;
@@ -26,15 +27,13 @@ const SideBar: React.FC<SideBarProps> = ({ selectedStateState }) => {
         <b>{selectedStateState.selectedNameAndID.selectedName}</b>
       </p>
       <div className={`${baseClasses} ${transitionState}`}>
-        <div className="w-full flex flex-col items-center pt-10 px-4 overflow-y-auto max-h-full">
-          <p className="text-center text-4xl md:text-6xl lg:text-8xl font-sans font-bold mb-20">
+          <p className="text-center p-10 text-4xl md:text-6xl lg:text-8xl font-sans font-bold mb-20">
             <b>Representatives</b>
           </p>
           <RepsListComponent
             selectedStateState={selectedStateState}
           ></RepsListComponent>
         </div>
-      </div>
     </div>
   );
 };
@@ -43,24 +42,46 @@ const RepsListComponent: React.FC<RepsListComponentProps> = ({
   selectedStateState,
 }) => {
   const allMembers: Member[] = selectedStateState.reps?.members || [];
+  const requestStateLoading: Boolean = selectedStateState.isLoading;
+  const requestStateError: Boolean = selectedStateState.isError;
 
-  return (
-    <div className="flex justify-center">
-      <ol className="flex-grow list-decimal pl-5 text-2xl md:text-4xl lg:text-6xl font-sans font-bold mb-20 p-2 text-center text-gray-500">
-      {allMembers.length > 0 ? (
-        allMembers.map((member, index) => {
-          return <SideBarEntry key={index} member={member} />;
-        })
-      ) : (
-        <div>
-          <p>
-            No representatives found for this state.
-          </p>
+  if (requestStateError) {
+    return (
+      <div className="flex justify-center pl-5 text-2xl md:text-4xl lg:text-6xl font-sans font-bold mb-20 p-2 text-center text-gray-500">
+        <p>
+          An error occurred. Please try again later.
+        </p>
+      </div>
+    )
+  } else if (requestStateLoading) {
+    return (
+      <div className="flex justify-center">
+        <LoadingSpinner/>
+      </div>
+    );
+  } else if (allMembers.length <= 0) {
+    return (
+      <div className="flex justify-center pl-5 text-2xl md:text-4xl lg:text-6xl font-sans font-bold mb-20 p-2 text-center text-gray-500">
+        <p>
+          No representives found in this state.
+        </p>
+      </div>
+    )
+  } else {
+    return (
+      <div className="w-full flex flex-col justify-center items-center pt-10 px-4 overflow-y-auto max-h-full">
+        <div className="pl-5 text-2xl md:text-4xl lg:text-6xl font-sans font-bold mb-20 p-2 text-center text-gray-500">
+          <ol className="flex-grow list-decimal">
+            {
+              allMembers.map((member, index) => {
+                return <SideBarEntry key={index} member={member} />;
+              })
+            }
+          </ol>
         </div>
-      )}
-      </ol>
-    </div>
-  );
+      </div>
+    );
+  }
 };
 
 const SideBarEntry: React.FC<SideBarEntryProps> = ({ member }) => {

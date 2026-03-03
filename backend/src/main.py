@@ -1,4 +1,5 @@
 import os
+from typing import Dict, List
 
 import requests
 from fastapi import FastAPI, HTTPException
@@ -19,9 +20,9 @@ async def read_root():
 
 
 @app.get("/api/members")
-async def get_members(state: str):
+async def get_members(state: str) -> Dict:
 
-    congress_member_endpoint = f"https://api.congress.gov/v3/member/{state}"
+    congress_member_endpoint: str = f"https://api.congress.gov/v3/member/{state}"
 
     response = requests.get(
         congress_member_endpoint,
@@ -39,17 +40,17 @@ async def get_members(state: str):
     if not response:
         raise HTTPException(status_code=response.status_code, detail=response.text)
 
-    response_json = response.json()
-    all_member_data = []
+    response_json: Dict = response.json()
+    all_member_data: List = []
     for member in response_json.get("members", []):
 
-        term_items = member.get("terms", {}).get("item", [])
+        term_items: Dict = member.get("terms", {}).get("item", [])
 
-        current_chamber = "Unknown"
+        current_chamber: str = "Unknown"
         if term_items:
             current_chamber = term_items[-1].get("chamber", "Unknown")
 
-        member_info = {
+        member_info: Dict = {
             "name": member.get("name", "Unknown"),
             "party": member.get("partyName", "Unknown"),
             "chamber": current_chamber,
@@ -58,7 +59,7 @@ async def get_members(state: str):
             member_info["district"] = member["district"]
         all_member_data.append(member_info)
 
-    structured_response = {
+    structured_response: Dict = {
         "members": all_member_data,
     }
 
