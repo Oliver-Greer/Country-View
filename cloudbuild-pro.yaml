@@ -102,7 +102,8 @@ steps:
       apt-get update && apt-get install -y jq
       tmpfile=$(mktemp)
       cp firebase.json "$tmpfile"
-      jq (.hosting.rewrites[0].run | select(.serviceId == "country-view-dev")).Value |= "county-view" "$tmpfile" >firebase.json
+      jq '(.hosting.rewrites[0].run | select(.serviceId == "country-view-dev")).Value |= "county-view"'
+      cp "$tmpfile" firebase.json
       rm -f -- "$tmpfile"
   waitFor: ['Push Image']
 
