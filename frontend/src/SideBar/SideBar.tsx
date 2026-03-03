@@ -30,9 +30,7 @@ const SideBar: React.FC<SideBarProps> = ({ selectedStateState }) => {
           <p className="text-center p-10 text-4xl md:text-6xl lg:text-8xl font-sans font-bold mb-20">
             <b>Representatives</b>
           </p>
-          <RepsListComponent
-            selectedStateState={selectedStateState}
-          ></RepsListComponent>
+            <RepsListComponent selectedStateState={selectedStateState}/>
         </div>
     </div>
   );
@@ -69,15 +67,13 @@ const RepsListComponent: React.FC<RepsListComponentProps> = ({
     )
   } else {
     return (
-      <div className="w-full flex flex-col justify-center items-center pt-10 px-4 overflow-y-auto max-h-full">
-        <div className="pl-5 text-2xl md:text-4xl lg:text-6xl font-sans font-bold mb-20 p-2 text-center text-gray-500">
-          <ol className="flex-grow list-decimal">
+      <div className="w-fullflex flex-col justify-center items-center pt-10 px-4 overflow-y-auto overflow-x-hidden max-h-full">
+        <div className="text-2xl px-25 break-words md:text-4xl lg:text-6xl font-sans font-bold mb-20 p-2 text-center text-gray-500">
             {
               allMembers.map((member, index) => {
                 return <SideBarEntry key={index} member={member} />;
               })
             }
-          </ol>
         </div>
       </div>
     );
