@@ -26,7 +26,7 @@ describe("State Reducer", () => {
       selectedNameAndID: { selectedName: "", selectedID: "" },
       isLoading: false,
       isError: false,
-      reps: { members: [] },
+      reps: null,
     };
 
     expect(newState).toStrictEqual(expectedState);

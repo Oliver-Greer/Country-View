@@ -15,5 +15,12 @@ export default defineConfig({
       },
     }),
   ],
-  test: { environment: "jsdom", setupFiles: "./tests/setup.js", globals: true },
+  test: {
+    environment: "jsdom",
+    setupFiles: "./tests/setup.js",
+    globals: true,
+    deps: {
+      inline: [/react-loader-spinner/]
+    }
+  },
 });
