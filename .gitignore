@@ -31,3 +31,6 @@ dist-ssr
 *.pyc
 __pycache__/
 .venv/
+
+# Testing and Local Development
+mock_data/

@@ -27,10 +27,12 @@ const SideBar: React.FC<SideBarProps> = ({ selectedStateState }) => {
         <b>{selectedStateState.selectedNameAndID.selectedName}</b>
       </p>
       <div className={`${baseClasses} ${transitionState}`}>
-          <p className="text-center p-10 text-4xl md:text-6xl lg:text-8xl font-sans font-bold mb-20">
-            <b>Representatives</b>
-          </p>
+          <div className="w-full flex flex-col items-center pt-10 px-4 overflow-y-auto max-h-full">
+            <p className="text-center p-10 text-4xl md:text-6xl lg:text-8xl font-sans font-bold mb-20">
+              <b>Representatives</b>
+            </p>
             <RepsListComponent selectedStateState={selectedStateState}/>
+          </div>
         </div>
     </div>
   );
@@ -53,7 +55,7 @@ const RepsListComponent: React.FC<RepsListComponentProps> = ({
     )
   } else if (requestStateLoading) {
     return (
-      <div className="flex justify-center">
+      <div className="flex justify-center overflow-hidden">
         <LoadingSpinner/>
       </div>
     );
@@ -67,8 +69,8 @@ const RepsListComponent: React.FC<RepsListComponentProps> = ({
     )
   } else {
     return (
-      <div className="w-fullflex flex-col justify-center items-center pt-10 px-4 overflow-y-auto overflow-x-hidden max-h-full">
-        <div className="text-2xl px-25 break-words md:text-4xl lg:text-6xl font-sans font-bold mb-20 p-2 text-center text-gray-500">
+      <div className="flex justify-left px-30">
+        <div className="flex-grow list-decimal break-words text-2xl md:text-4xl lg:text-6xl font-sans font-bold mb-20 p-2 text-left text-gray-500">
             {
               allMembers.map((member, index) => {
                 return <SideBarEntry key={index} member={member} />;
@@ -81,30 +83,52 @@ const RepsListComponent: React.FC<RepsListComponentProps> = ({
 };
 
 const SideBarEntry: React.FC<SideBarEntryProps> = ({ member }) => {
-  return (
-    <li>
-      <div className="p-2 text-gray-500">
-        <p className="text-left text-2xl md:text-4xl lg:text-6xl font-sans font-bold mb-20">
-          Representative Name: {member.name}
-        </p>
-      </div>
-      <div className="p-2 text-gray-500">
-        <p className="text-left text-2xl md:text-4xl lg:text-6xl font-sans font-bold mb-20">
-          Political Party: {member.party}
-        </p>
-      </div>
-      <div className="p-2 text-gray-500">
-        <p className="text-left text-2xl md:text-4xl lg:text-6xl font-sans font-bold mb-20">
-          Chamber: {member.chamber}
-        </p>
-      </div>
-      <div className="p-2 text-gray-500">
-        <p className="text-left text-2xl md:text-4xl lg:text-6xl font-sans font-bold mb-20">
-          District: {member.district}
-        </p>
-      </div>
-    </li>
-  );
+  if (member.district) {
+    return (
+      <li>
+        <div className="p-5">
+          <p>
+            Representative Name: {member.name}
+          </p>
+        </div>
+        <div className="p-5">
+          <p>
+            Political Party: {member.party}
+          </p>
+        </div>
+        <div className="p-5">
+          <p>
+            Chamber: {member.chamber}
+          </p>
+        </div>
+        <div className="p-5">
+          <p>
+            District: {member.district}
+          </p>
+        </div>
+      </li>
+    );
+  } else {
+      return (
+        <li>
+          <div className="p-5">
+            <p>
+              Representative Name: {member.name}
+            </p>
+          </div>
+          <div className="p-5">
+            <p>
+              Political Party: {member.party}
+            </p>
+          </div>
+          <div className="p-5">
+            <p>
+              Chamber: {member.chamber}
+            </p>
+          </div>
+        </li>
+      )
+  }
 };
 
 export default SideBar;

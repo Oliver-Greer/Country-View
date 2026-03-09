@@ -22,7 +22,7 @@ interface RepsData {
 export type SelectedStateState = {
   selectedNameAndID: Record<any, string>;
   isStateClicked: boolean;
-  reps: RepsData;
+  reps: RepsData | null;
   isLoading: boolean;
   isError: boolean;
 };
@@ -72,6 +72,7 @@ const selectedStateReducer = (
         ...state,
         isStateClicked: false,
         selectedNameAndID: { selectedName: "", selectedID: "" },
+        reps: null,
       };
     case "REPS_FETCH_INIT":
       return {
